@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Legendword File Transfer</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./main.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-item active" data-target="upload-main">
+            <div class="sidebar-item-content">
+                Upload
+            </div>
+        </div>
+        <div class="sidebar-item" data-target="download-main">
+            <div class="sidebar-item-content">
+                Download
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div id="upload-main" class="main-section active">
+            <div id="upload-dropzone" class="upload-section active">
+                <div class="dropzone-text">Drop a file here or click to select.</div>
+            </div>
+            <div id="upload-info" class="upload-section">
+                <div class="info-box">
+                    <div id="upload-filename"></div>
+                    <div class="progress transfer-progress">
+                        <div id="upload-progressbar" class="progress-bar" role="progressbar"></div>
+                    </div>
+                    <div id="upload-status"></div>
+                </div>
+            </div>
+            <div id="upload-success" class="upload-section">
+                <div class="info-box">
+                    <div id="success-filename"></div>
+                    <div id="success-code"></div>
+                    <div class="success-text">Use this code to download.</div>
+                </div>
+            </div>
+        </div>
+        <div id="download-main" class="main-section">
+            <div id="download-input" class="download-section active">
+                <div class="download-input-box">
+                    <div class="code-label">File Code</div>
+                    <input type="text" id="download-code" maxlength="4" />
+                    <div class="download-confirm"><button class="btn" id="download-btn">Download</button></div>
+                </div>
+            </div>
+            <div id="download-info" class="download-section">
+                <div class="info-box">
+                    <div id="download-filename"></div>
+                    <div class="progress transfer-progress">
+                        <div id="download-progressbar" class="progress-bar" role="progressbar"></div>
+                    </div>
+                    <div id="download-status"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="./ui.js"></script>
+</body>
+
+</html>

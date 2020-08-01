@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Legendword File Transfer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="dependencies/bootstrap.v4.min.css" />
+    <script src="dependencies/jquery-1.11.3.js"></script>
+    <script>
+    /*version 2.0*/
+    var currentCode = "";
+    var codecheck = function(a) {
+        if (a.length != 4) {
+            alert("Code must be a 4 digit number");
+            return false;
+        }
+        return true;
+    };
+    var downloadCheck = function() {
+        if (currentCode != "") {
+            $.get("transfer_check.php", { code: currentCode }, function(t) {
+                if (t == "false") {
+                    $("#up3").show();
+                } else $("#up3").hide();
+            });
+        }
+    }
+    $(function() {
+        $("#a").submit(function(event) {
+            currentCode = "";
+
+            $(".hidden").hide();
+            $("#up1").show();
+
+            var form = $(this);
+            formData = new FormData(this);
+            //console.log(formData);
+            $.ajax({
+                type: "post",
+                url: "transfer_query.php",
+                data: formData,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                cache: false,
+                processData: false
+            }).success(function(t) {
+                console.log(t);
+                if (t.length != 4) {
+                    if (t == "E1") {
+                        alert("Error while uploading your file.");
+                        return;
+                    } else {
+                        alert("Unknown Error. Information listed below:\n" + t);
+                        return;
+                    }
+                }
+                currentCode = t;
+                $("#code").text(t);
+                $("#up2").show();
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("Unknown Error. Information listed below:\n" + jqXHR + "\n" + textStatus + "\n" + errorThrown);
+            });
+            event.preventDefault();
+        });
+        $("#downbtn").click(function(event) {
+            //event.preventDefault();
+            var ce = $("#downcode").val();
+            if (codecheck(ce)) {
+                $.get("transfer_check.php", { code: ce }, function(t) {
+                    if (t != "true") {
+                        alert("File doesn't exist");
+                        //event.preventDefault();
+                    } else {
+                        $("#downcodeh").val(ce);
+                        $("#bh").submit();
+                    }
+                });
+            } else alert("传输代码格式错误");
+        });
+        $("#checkbtn").click(function(event) {
+            var ce = $("#checkcode").val();
+            if (codecheck(ce)) {
+                $.get("transfer_check.php", { code: ce }, function(t) {
+                    if (t != "true") {
+                        alert("File doesn't exist. It has been downloaded or has not yet been uploaded.");
+                        //event.preventDefault();
+                    } else {
+                        alert("Found file, ready to download.");
+                    }
+                });
+            }
+        });
+        setInterval("downloadCheck()", 3000);
+    });
+    </script>
+    <style>
+    .hidden {
+        display: none;
+    }
+
+    .note {
+        color: #C6CBC8;
+    }
+    </style>
+</head>
+
+<body class="container" style="padding-top:20px;">
+    <div id="msg" style="position:fixed;top:0;left:0;bottom:0;right:0;margin:auto;width:200px;height:100px;display: none;z-index:10;background:#fff;">
+        <h2 style="line-height:100px;text-align:center;">正在上传...</h2>
+    </div>
+    <center>
+        <h2>LTransfer Simple File Transfer Platform</h2>
+    </center>
+    <hr />
+    <div class="row">
+        <div class="col-6">
+            <h3>Upload</h3>
+            <br />
+            <form enctype="multipart/form-data" id="a">
+                <div class="form-group">
+                    <label for="f">File</label>
+                    <p>
+                        <input type="file" name="uploadfile" class="form-control-file form-control-lg" required id="f">
+                    </p>
+                    <p>
+                        <input class="btn btn-success" type="submit" value="Start Upload">
+                    </p>
+                </div>
+            </form>
+            <div class="card">
+                <div class="card-body">
+                    <p>Transfer Status:</p>
+                    <div id="up1" class="hidden">
+                        <p>Uploading file....</p>
+                    </div>
+                    <div id="up2" class="hidden">
+                        <p style="color:green;">File has been uploaded!</p>
+                        <p>Transfer Code:</p>
+                        <h4 id="code"></h4>
+                        <br />
+                        <p>Waiting for receiver....</p>
+                    </div>
+                    <div id="up3" class="hidden">
+                        <p style="color:green;">File has been received.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <h3>Download</h3>
+            <br />
+            <form action="transfer_download.php" target="_blank" method="get" id="bh" style="display:none;">
+                <input type="text" name="code" id="downcodeh">
+            </form>
+            <div class="form-group">
+                <label for="downcode">Transfer Code</label>
+                <p>
+                    <input type="text" class="form-control" name="code" placeholder="Enter the 4-digit transfer code" maxlength="4" required size="20" id="downcode" autocomplete="off">
+                </p>
+                <p>
+                    <button class="btn btn-primary" id="downbtn">Start Download</button>
+                </p>
+            </div>
+            <hr />
+            <p>Check If File Exists</p>
+            <div class="form-inline">
+                <div class="form-group mb-2 mx-sm-3">
+                    <input type="text" class="form-control" placeholder="Enter transfer code to check" maxlength="4" size="20" id="checkcode" autocomplete="off">
+                </div>
+                <button class="btn btn-primary mb-2" id="checkbtn">Check</button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <h5>How-To</h5>
+    <p>Maximum file size is 256MB. After you upload the file, you'll get a random 4-digit code as the transfer code. On the receiving device, open this page and enter the 4-digit transfer code to download. The file will be destroyed immediately after a successful download, and thus it's not possible to download the same file twice. To transfer the file to multiple devices, you'll need to upload it again every time a download is made. You can check if a file is downloaded or not by using the query function above. The file provider will also get a message after a download is made.</p>
+    <p class="note">&copy; Legendword 2016-2019</p>
+</body>
+
+</html>

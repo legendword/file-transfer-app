@@ -1,0 +1,35 @@
+{
+  "name": "legendword-file-transfer",
+  "version": "1.0.0",
+  "description": "Legendword File Transfer Tool",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "buildall": "electron-builder -mwl"
+  },
+  "keywords": [
+    "File Transfer"
+  ],
+  "build": {
+    "appId": "com.legendword.filetransfer",
+    "productName": "LTransfer",
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "author": "Legendword",
+  "devDependencies": {
+    "electron": "^9.1.2",
+    "electron-builder": "^22.8.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.5.0",
+    "request": "^2.88.2",
+    "unused-filename": "^2.1.0"
+  }
+}
